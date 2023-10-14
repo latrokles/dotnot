@@ -16,7 +16,7 @@ pytest-cov = "^4.1.0"
 pytest-html = "^4.0.2"
 
 [tool.pytest.ini_options]
-addopts = "-ra -q --cov=dotnot --cov-report=html --html=test-report.html"
+addopts = "-ra -q --cov=dotnot --cov-report=html:reports/cov --cov-report=term --html=reports/test-report.html"
 pythonpath = ["."]
 testpaths = ["tests"]
 
