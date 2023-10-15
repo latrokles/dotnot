@@ -7,7 +7,27 @@ from typing import ClassVar
 
 
 def fmt(value):
-    pass
+    if value is None:
+        return 'nil'
+
+    match value:
+        case DNObj():
+            return value.fmt()
+        case bool():
+            return str(value)[0].lower()
+        case str():
+            return f"'{value}'"
+        case tuple():
+            contents = ' '.join(fmt(element) for element in value)
+            return 'tuple{ ' + contents + ' }'
+        case list():
+            contents = ' '.join(fmt(element) for element in value)
+            return 'list{ ' + contents + ' }'
+        case dict():
+            contents = ' '.join(f'{fmt(key)} {fmt(val)}' for key, val in value.items())
+            return 'hashtable{ ' + contents + ' }'
+        case _:
+            return str(value)
 
 
 def prettyfmt(value):
@@ -24,10 +44,10 @@ def display_pretty(value, out=sys.stdout):
 
 class DNObj:
     def fmt(self):
-        return fmt(self)
+        return repr(self)
 
     def prettyfmt(self):
-        return prettyfmt(self)
+        return repr(self)
 
     def print(self, stream=sys.stdout):
         display(self, out=stream)
@@ -41,8 +61,14 @@ class Symbol(DNObj):
     value: str
     _instances: ClassVar[dict[str, Symbol]] = {}
 
+    def fmt(self):
+        return f"#{self.value}"
+
+    def prettyfmt(self):
+        return self.fmt()
+
     @classmethod
-    def make(cls, value: str): 
+    def make(cls, value: str):
         sym = cls._instances.get(value)
         if sym is None:
             sym = cls(value)
@@ -51,6 +77,4 @@ class Symbol(DNObj):
 
 
 
-Value = str | float | int | bool | None | DNObj
-
-
+Value = str | float | int | bool | None | list | dict | tuple | DNObj
