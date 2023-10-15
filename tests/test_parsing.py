@@ -30,6 +30,12 @@ def test_parses_words():
     assert Parser().parse_source("t f nil") == ['t', 'f', 'nil']
 
 
+def test_source_file():
+    with open('examples/media-catalog.not') as f:
+        src = f.read()
+        values = Parser().parse_source(src)
+
+
 def test_raises_scan_error_on_unterminated_strings():
     with pytest.raises(ScanError):
         Parser().parse_source("'this is a bad string")

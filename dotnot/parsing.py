@@ -128,7 +128,6 @@ class Parser:
         values = []
         while self.scanner.is_not_finished():
             token = self.scanner.next_token()
-            print(f'token={token}')
             values.append(token)
 
         return values
