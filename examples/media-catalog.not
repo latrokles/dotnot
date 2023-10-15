@@ -1,3 +1,14 @@
+=begin
+This is a simple tool to track books and other media, the idea is to be able to:
+
+- add a new media object (a book, a dvd, a cd) and associate it with a physical location
+- add a new physical location
+- query the location of a given media object
+- query the media objects in a given location
+- get a listing of all media objects
+- get a listing of all locations
+
+=end
 in: latrokles/tools/media-catalog
 
 use: services/open-library/query-book-by-isbn ;
