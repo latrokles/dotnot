@@ -1,0 +1,58 @@
+IN: imperfect.services.mediaplayer
+
+USE-FROM: std:process open-in-new-session-no-shell ;
+USE-FROM: std:time sleep ;
+USE-FROM: std:socket :UnixSocket connect ;
+
+CONST: MPV-CMD [ 'mpv' '--idle' '--input-ipc-server=/tmp/mpvsocket' ]
+CONST: MPV-SOCK '/tmp/mpvsocket'
+
+
+:MediaServer
+  ipc
+  process
+  active
+  selected_media ;
+
+defmethod: ::MediaServer serve
+  start-player
+  connect-to-player
+  loop ;
+
+defmethod: ::MediaServer start-player
+  'MPV-CMD' get-global
+  open-in-new-session-no-shell
+  .process= ;
+
+defmethod: ::MediaServer connect-to-player
+  0.5 sleep
+  'MPV-SOCK' get-global
+  ::UnixSocket .ipc= ;
+
+defmethod: ::MediaServer loop
+  #t .active=
+  [ listen-for-request ] [ .active ] while ;
+
+defmethod: ::MediaServer listen-for-request
+  *global-tuplespace* #MediaServer read
+  [ 'play-audio-file' .cmd = ] [ play-audio-file ] if
+  [ 'play-video-file' .cmd = ] [ play-video-file ] if
+  [ 'play-audio-url'  .cmd = ] [ play-audio-url  ] if
+  [ 'play-video-url'  .cmd = ] [ play-video-url  ] if
+  [ 'pause'           .cmd = ] [ pause           ] if
+  [ 'resume'          .cmd = ] [ resume          ] if
+  [ 'resume'          .cmd = ] [ stop            ] if
+
+defmethod: ::MediaServer play-audio-file
+  ... ;
+
+defmethod: ::MediaServer play-audio-url
+  .ipc
+  { 'command' [ 'set_property' 'video' 'no' ] } >json-utf8
+  send
+  { 'command' [ 'loadfile' ;
+
+defmethod: ::MediaServer play-video-file
+  ... ;
+
+defmethod: ::MediaServer play-video-url
